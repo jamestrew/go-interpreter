@@ -8,3 +8,6 @@ type Token struct {
 	Literal string
 }
 
+func New(tokenType TokenType, ch byte) Token {
+	return Token{tokenType, string(ch)}
+}
