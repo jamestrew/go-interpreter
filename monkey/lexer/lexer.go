@@ -92,12 +92,11 @@ func isLetter(ch byte) bool {
 }
 
 func (l *Lexer) readIdentifier() string {
-	var ret string
+	position := l.position
 	for isLetter(l.ch) {
-		ret += string(l.ch) // probably not ideal
 		l.readChar()
 	}
-	return ret
+	return l.input[position:l.position]
 }
 
 func isDigit(ch byte) bool {
