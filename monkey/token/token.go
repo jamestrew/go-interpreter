@@ -17,6 +17,17 @@ func MultiCharToken(literal string) TokenType {
 		return FUNCTION
 	case "let":
 		return LET
+	case "true":
+		return TRUE
+	case "false":
+		return FALSE
+	case "return":
+		return RETURN
+	case "if":
+		return IF
+	case "else":
+		return ELSE
+
 	default:
 		return IDENT
 	}
