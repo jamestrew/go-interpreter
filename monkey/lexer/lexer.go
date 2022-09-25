@@ -23,7 +23,7 @@ func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 	switch l.ch {
 	case '=':
-		tok = token.New(token.ASSIGN, l.ch)
+		tok = l.getMultiChToken('=', token.ASSIGN, token.EQ)
 	case '+':
 		tok = token.New(token.PLUS, l.ch)
 	case '-':
@@ -33,11 +33,11 @@ func (l *Lexer) NextToken() token.Token {
 	case '/':
 		tok = token.New(token.SLASH, l.ch)
 	case '!':
-		tok = token.New(token.BANG, l.ch)
+		tok = l.getMultiChToken('=', token.BANG, token.NOT_EQ)
 	case '<':
-		tok = token.New(token.LT, l.ch)
+		tok = l.getMultiChToken('=', token.LT, token.LT_EQ)
 	case '>':
-		tok = token.New(token.GT, l.ch)
+		tok = l.getMultiChToken('=', token.GT, token.GT_EQ)
 	case ',':
 		tok = token.New(token.COMMA, l.ch)
 	case ';':
@@ -56,11 +56,10 @@ func (l *Lexer) NextToken() token.Token {
 	default:
 		if isLetter(l.ch) {
 			tok.Literal = l.readIdentifier()
-			tok.Type = token.MultiCharToken(tok.Literal)
+			tok.Type = token.KeywordOrIdent(tok.Literal)
 			return tok
 		} else if isDigit(l.ch) {
-			tok.Literal = l.readNumber()
-			tok.Type = token.INT
+			tok = token.Token{Type: token.INT, Literal: l.readNumber()}
 			return tok
 		} else {
 			tok = token.New(token.ILLEGAL, l.ch)
@@ -109,4 +108,25 @@ func (l *Lexer) readNumber() string {
 		l.readChar()
 	}
 	return l.input[position:l.position]
+}
+
+func (l *Lexer) peekChar() byte {
+	if l.readPosition >= len(l.input) {
+		return 0
+	} else {
+		return l.input[l.readPosition]
+	}
+}
+
+func (l *Lexer) getMultiChToken(secChar byte, oneChToken, twoChToken token.TokenType) token.Token {
+	var tok token.Token
+	if l.peekChar() == secChar {
+		ch := l.ch
+		l.readChar()
+		tok.Literal = string(ch) + string(l.ch)
+		tok.Type = twoChToken
+	} else {
+		tok = token.New(oneChToken, l.ch)
+	}
+	return tok
 }

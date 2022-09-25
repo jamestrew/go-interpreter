@@ -23,6 +23,12 @@ func TestNextToken(t *testing.T) {
 		return false;
 	}
 
+	10 == 10
+	10 != 9
+	5 <= 10
+	10 >= 5
+	`
+
 	test := []struct {
 		expectedType    token.TokenType
 		expectedLiteral string
@@ -97,6 +103,23 @@ func TestNextToken(t *testing.T) {
 		{token.FALSE, "false"},
 		{token.SEMICOLON, ";"},
 		{token.RBRACE, "}"},
+
+		{token.INT, "10"},
+		{token.EQ, "=="},
+		{token.INT, "10"},
+
+		{token.INT, "10"},
+		{token.NOT_EQ, "!="},
+		{token.INT, "9"},
+
+		{token.INT, "5"},
+		{token.LT_EQ, "<="},
+		{token.INT, "10"},
+
+		{token.INT, "10"},
+		{token.GT_EQ, ">="},
+		{token.INT, "5"},
+
 		{token.EOF, ""},
 	}
 

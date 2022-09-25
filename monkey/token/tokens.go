@@ -14,10 +14,17 @@ const (
 	ASTERISK = "*"
 	SLASH = "/"
 
+	EQ = "=="
+	NOT_EQ = "!="
 	LT = "<"
 	GT = ">"
+	LT_EQ = "<="
+	GT_EQ = ">="
+
+
 	COMMA = ","
 	SEMICOLON = ";"
+
 
 	LPAREN = "("
 	RPAREN = ")"

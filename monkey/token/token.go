@@ -11,7 +11,7 @@ func New(tokenType TokenType, ch byte) Token {
 	return Token{tokenType, string(ch)}
 }
 
-func MultiCharToken(literal string) TokenType {
+func KeywordOrIdent(literal string) TokenType {
 	switch literal {
 	case "fn":
 		return FUNCTION
