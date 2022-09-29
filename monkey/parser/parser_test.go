@@ -7,7 +7,7 @@ import (
 	"github.com/jamestrew/go-interpreter/monkey/lexer"
 )
 
-func TestLestStatements(t *testing.T) {
+func TestLetStatements(t *testing.T) {
 	input := `
 	let x = 5;
 	let y = 10;

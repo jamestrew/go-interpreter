@@ -6,7 +6,6 @@ import (
 	"github.com/jamestrew/go-interpreter/monkey/token"
 )
 
-
 type Parser struct {
 	lexer *lexer.Lexer
 	curToken token.Token
@@ -28,7 +27,6 @@ func (p *Parser) nextToken() {
 	p.curToken = p.peekToken
 	p.peekToken = p.lexer.NextToken()
 }
-
 
 func (p *Parser) curTokenIs(t token.TokenType) bool {
 	return p.curToken.Type == t
@@ -53,12 +51,11 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 		return nil
 	}
 
-	stmt.Name = &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal }
+	stmt.Name = &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
 
 	if !p.expectPeek(token.ASSIGN) {
 		return nil
 	}
-
 
 	// TODO: assign value
 	for !p.curTokenIs(token.SEMICOLON) {
