@@ -13,15 +13,8 @@ func TestLetStatements(t *testing.T) {
 	let y = 10;
 	let foobar = 838383;
 	`
-
-	lexer := lexer.New(input)
-	parser := New(lexer)
-
-	program := parser.ParseProgram()
-
-	if program == nil {
-		t.Fatalf("ParseProgram() returned nil")
-	}
+	program, parser := programSetup(t, input)
+	checkParserErrors(t, parser, 0)
 
 	if len(program.Statements) != 3 {
 		t.Fatalf(
@@ -44,6 +37,33 @@ func TestLetStatements(t *testing.T) {
 			return
 		}
 	}
+}
+
+func TestLetStatementsErrors(t *testing.T) {
+	input := `
+	let x 5;
+	let = 10;
+	let 838383;
+	`
+	_, parser := programSetup(t, input)
+	checkParserErrors(t, parser, 3)
+	// TODO: should be 0?!
+	// if len(program.Statements) != 0 {
+	// 	t.Log(program.Statements)
+	// 	t.Fatalf("program.Statements should contain 0 statements. got=%d", len(program.Statements))
+	// }
+
+}
+
+func programSetup(t *testing.T, input string) (*ast.Program, *Parser) {
+	lexer := lexer.New(input)
+	parser := New(lexer)
+	program := parser.ParseProgram()
+	if program == nil {
+		t.Fatalf("ParseProgram() returned nil")
+	}
+
+	return program, parser
 }
 
 func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
@@ -71,14 +91,14 @@ func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	return true
 }
 
-func checkParserErrors(t *testing.T, p *Parser) {
+func checkParserErrors(t *testing.T, p *Parser, expectedErrCnt int) {
 	errors := p.Errors()
 
-	if len(errors) == 0 {
+	if len(errors) == expectedErrCnt {
 		return
 	}
 
-	t.Errorf("parser has %d errors", len(errors))
+	t.Errorf("parser.errors expected %d error(s). got=%d", expectedErrCnt, len(errors))
 	for _, err := range errors {
 		t.Errorf("parser error: %s", err)
 	}
