@@ -1,21 +1,33 @@
 package parser
 
 import (
+	"fmt"
+
 	"github.com/jamestrew/go-interpreter/monkey/ast"
 	"github.com/jamestrew/go-interpreter/monkey/lexer"
 	"github.com/jamestrew/go-interpreter/monkey/token"
 )
 
 type Parser struct {
-	lexer *lexer.Lexer
-	curToken token.Token
+	lexer     *lexer.Lexer
+	curToken  token.Token
 	peekToken token.Token
+	errors    []string
 }
 
 func New(lexer *lexer.Lexer) *Parser {
-	p := &Parser{lexer: lexer}
+	p := &Parser{lexer: lexer, errors: []string{}}
 	p.setInitialTokens()
 	return p
+}
+
+func (p *Parser) Errors() []string {
+	return p.errors
+}
+
+func (p *Parser) peekError(t token.TokenType) {
+	msg := fmt.Sprintf("expected next token to be %s, got %s instead", t, p.peekToken.Type)
+	p.errors = append(p.errors, msg)
 }
 
 func (p *Parser) setInitialTokens() {
@@ -41,6 +53,7 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 		p.nextToken()
 		return true
 	}
+	p.peekError(t)
 	return false
 }
 
@@ -85,7 +98,7 @@ func (p *Parser) parseStatement() ast.Statement {
 func (p *Parser) ParseProgram() *ast.Program {
 	statements := []ast.Statement{}
 
-	for p.curToken.Type != token.EOF {
+	for !p.curTokenIs(token.EOF) {
 		stmt := p.parseStatement()
 		if stmt != nil {
 			statements = append(statements, stmt)
@@ -95,5 +108,3 @@ func (p *Parser) ParseProgram() *ast.Program {
 
 	return &ast.Program{Statements: statements}
 }
-
-
