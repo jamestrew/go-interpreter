@@ -45,14 +45,12 @@ func TestLetStatementsErrors(t *testing.T) {
 	let = 10;
 	let 838383;
 	`
-	_, parser := programSetup(t, input)
+	program, parser := programSetup(t, input)
 	checkParserErrors(t, parser, 3)
-	// TODO: should be 0?!
-	// if len(program.Statements) != 0 {
-	// 	t.Log(program.Statements)
-	// 	t.Fatalf("program.Statements should contain 0 statements. got=%d", len(program.Statements))
-	// }
-
+	if len(program.Statements) != 3 {
+		t.Log(program.Statements)
+		t.Fatalf("program.Statements should contain 3 statements. got=%d", len(program.Statements))
+	}
 }
 
 func programSetup(t *testing.T, input string) (*ast.Program, *Parser) {
