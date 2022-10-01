@@ -21,6 +21,7 @@ func programSetup(t *testing.T, input string, stmtCnt int) (*ast.Program, *Parse
 			stmtCnt,
 			len(program.Statements),
 		)
+		t.Log(input)
 	}
 
 	return program, parser

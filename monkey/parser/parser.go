@@ -142,6 +142,11 @@ func (p *Parser) noPrefixFnError(t token.TokenType) {
 	p.errors = append(p.errors, msg)
 }
 
+func (p *Parser) noInfixFnError(t token.TokenType) {
+	msg := fmt.Sprintf("no infix parse function for %s found", t)
+	p.errors = append(p.errors, msg)
+}
+
 func (p *Parser) parseExpression(precedence int) ast.Expression {
 	prefixFn := p.prefixParseFns[p.curToken.Type]
 	if prefixFn == nil {
@@ -153,6 +158,7 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	for !p.peekTokenIs(token.SEMICOLON) && precedence < p.peekPrecedence() {
 		infix := p.infixParseFns[p.peekToken.Type]
 		if infix == nil {
+			p.noInfixFnError(p.curToken.Type)
 			return leftExpression
 		}
 		p.nextToken()

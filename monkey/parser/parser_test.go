@@ -189,3 +189,33 @@ func TestInfixExpressions(t *testing.T) {
 		}
 	}
 }
+func TestOperatorPrecedenceParsing(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+		stmtCnt  int
+	}{
+		{"-a * b", "((-a) * b)", 1},
+		{"!-a", "(!(-a))", 1},
+		{"a + b + c", "((a + b) + c)", 1},
+		{"a + b - c", "((a + b) - c)", 1},
+		{"a * b * c", "((a * b) * c)", 1},
+		{"a * b / c", "((a * b) / c)", 1},
+		{"a + b / c", "(a + (b / c))", 1},
+		{"a + b * c + d / e - f", "(((a + (b * c)) + (d / e)) - f)", 1},
+		{"3 + 4; -5 * 5", "(3 + 4)((-5) * 5)", 2},
+		{"5 > 4 == 3 < 4", "((5 > 4) == (3 < 4))", 1},
+		{"5 < 4 != 3 > 4", "((5 < 4) != (3 > 4))", 1},
+		{"3 + 4 * 5 == 3 * 1 + 4 * 5", "((3 + (4 * 5)) == ((3 * 1) + (4 * 5)))", 1},
+	}
+
+	for _, tt := range tests {
+		program, parser := programSetup(t, tt.input, tt.stmtCnt)
+		checkParserErrors(t, parser, 0)
+
+		actual := program.String()
+		if actual != tt.expected {
+			t.Errorf("expected=%q, got=%q", tt.expected, actual)
+		}
+	}
+}
