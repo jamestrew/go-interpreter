@@ -33,20 +33,6 @@ func TestLetStatements(t *testing.T) {
 	}
 }
 
-func TestLetStatementsErrors(t *testing.T) {
-	input := `
-	let x 5;
-	let = 10;
-	let 838383;
-	`
-	_, parser := programSetup(t, input, -1)
-	checkParserErrors(t, parser, 3)
-	// if len(program.Statements) != 3 {
-	// 	t.Log(program.Statements)
-	// 	t.Fatalf("program.Statements should contain 3 statements. got=%d", len(program.Statements))
-	// }
-}
-
 func TestReturnStatement(t *testing.T) {
 	input := `
 	return 5;
