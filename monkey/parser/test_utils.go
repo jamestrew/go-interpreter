@@ -16,7 +16,7 @@ func programSetup(t *testing.T, input string, stmtCnt int) (*ast.Program, *Parse
 		t.Fatalf("ParseProgram() returned nil")
 	}
 	if stmtCnt != -1 && len(program.Statements) != stmtCnt {
-		t.Fatalf(
+		t.Errorf(
 			"program.Statements does not contain %d statements. got=%d",
 			stmtCnt,
 			len(program.Statements),
