@@ -154,16 +154,3 @@ func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	return true
 }
 
-func checkParserErrors(t *testing.T, p *Parser, expectedErrCnt int) {
-	errors := p.Errors()
-
-	if len(errors) == expectedErrCnt {
-		return
-	}
-
-	t.Errorf("parser.errors expected %d error(s). got=%d", expectedErrCnt, len(errors))
-	for _, err := range errors {
-		t.Errorf("parser error: %s", err)
-	}
-	t.FailNow()
-}
