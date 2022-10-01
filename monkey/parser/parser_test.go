@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/jamestrew/go-interpreter/monkey/ast"
-	"github.com/jamestrew/go-interpreter/monkey/lexer"
 	"github.com/jamestrew/go-interpreter/monkey/token"
 )
 
@@ -111,46 +110,38 @@ func TestIntegerLiteralExpression(t *testing.T) {
 	}
 }
 
-func programSetup(t *testing.T, input string, stmtCnt int) (*ast.Program, *Parser) {
-	lexer := lexer.New(input)
-	parser := New(lexer)
-	program := parser.ParseProgram()
-	if program == nil {
-		t.Fatalf("ParseProgram() returned nil")
-	}
-	if stmtCnt != -1 && len(program.Statements) != stmtCnt {
-		t.Fatalf(
-			"program.Statements does not contain %d statements. got=%d",
-			stmtCnt,
-			len(program.Statements),
-		)
+func TestPrefixExpressions(t *testing.T) {
+	prefixTests := []struct {
+		input        string
+		operator     string
+		integerValue int64
+	}{
+		{"!5", "!", 5},
+		{"-15", "-", 15},
 	}
 
-	return program, parser
-}
+	for _, tt := range prefixTests {
+		program, parser := programSetup(t, tt.input, 1)
+		checkParserErrors(t, parser, 0)
 
-func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
-	if s.TokenLiteral() != "let" {
-		t.Errorf("s.TokenLiteral not 'let'. got=%q", s.TokenLiteral())
-		return false
+		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+		if !ok {
+			t.Fatalf(
+				"program.Statements[0] is not ast.ExpressionStatement. got=%T",
+				program.Statements[0],
+			)
+		}
+
+		exp, ok := stmt.Expression.(*ast.PrefixExpression)
+		if !ok {
+			t.Fatalf("exp is not ast.PrefixExpression. got=%T", stmt.Expression)
+		}
+		if exp.Operator != tt.operator {
+			t.Fatalf("exp.Operator is not %s. got=%s", tt.operator, exp.Operator)
+		}
+		if !checkIntegerLiteral(t, exp.Right, tt.integerValue) {
+			return
+		}
 	}
-
-	letStmt, ok := s.(*ast.LetStatement)
-	if !ok {
-		t.Errorf("s not *ast.LetStatement. got=%T", s)
-		return false
-	}
-
-	if letStmt.Name.Value != name {
-		t.Errorf("letStmt.Name.Value not '%s'. got=%s", name, letStmt.Name.Value)
-		return false
-	}
-
-	if letStmt.Name.TokenLiteral() != name {
-		t.Errorf("s.TokenLiteral() not '%s'. got=%s", name, letStmt.Name)
-		return false
-	}
-
-	return true
 }
 
