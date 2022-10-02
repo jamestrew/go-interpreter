@@ -32,38 +32,6 @@ func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParseFn) {
 	p.infixParseFns[tokenType] = fn
 }
 
-func (p *Parser) parseIdentifier() ast.Expression {
-	return &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
-}
-
-func (p *Parser) parseIntegerLiteral() ast.Expression {
-	lit := &ast.IntegerLiteral{Token: p.curToken}
-	value, err := strconv.ParseInt(p.curToken.Literal, 0, 64)
-	if err != nil {
-		msg := fmt.Sprintf("could not parse %q as base 64 integer", p.curToken.Literal)
-		p.errors = append(p.errors, msg)
-		return nil
-	}
-	lit.Value = value
-
-	return lit
-}
-
-func (p *Parser) parsePrefixExpression() ast.Expression {
-	exp := &ast.PrefixExpression{Token: p.curToken, Operator: p.curToken.Literal}
-	p.nextToken()
-	exp.Right = p.parseExpression(PREFIX)
-	return exp
-}
-
-func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
-	exp := &ast.InfixExpression{Token: p.curToken, Left: left, Operator: p.curToken.Literal}
-	precedence := p.curPrecedence()
-	p.nextToken()
-	exp.Right = p.parseExpression(precedence)
-	return exp
-}
-
 func (p *Parser) nextToken() {
 	p.curToken = p.peekToken
 	p.peekToken = p.lexer.NextToken()
@@ -145,6 +113,38 @@ func (p *Parser) noPrefixFnError(t token.TokenType) {
 func (p *Parser) noInfixFnError(t token.TokenType) {
 	msg := fmt.Sprintf("no infix parse function for %s found", t)
 	p.errors = append(p.errors, msg)
+}
+
+func (p *Parser) parseIdentifier() ast.Expression {
+	return &ast.Identifier{Token: p.curToken, Value: p.curToken.Literal}
+}
+
+func (p *Parser) parseIntegerLiteral() ast.Expression {
+	lit := &ast.IntegerLiteral{Token: p.curToken}
+	value, err := strconv.ParseInt(p.curToken.Literal, 0, 64)
+	if err != nil {
+		msg := fmt.Sprintf("could not parse %q as base 64 integer", p.curToken.Literal)
+		p.errors = append(p.errors, msg)
+		return nil
+	}
+	lit.Value = value
+
+	return lit
+}
+
+func (p *Parser) parsePrefixExpression() ast.Expression {
+	exp := &ast.PrefixExpression{Token: p.curToken, Operator: p.curToken.Literal}
+	p.nextToken()
+	exp.Right = p.parseExpression(PREFIX)
+	return exp
+}
+
+func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
+	exp := &ast.InfixExpression{Token: p.curToken, Left: left, Operator: p.curToken.Literal}
+	precedence := p.curPrecedence()
+	p.nextToken()
+	exp.Right = p.parseExpression(precedence)
+	return exp
 }
 
 func (p *Parser) parseExpression(precedence int) ast.Expression {
