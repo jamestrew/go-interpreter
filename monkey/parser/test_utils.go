@@ -85,3 +85,82 @@ func checkIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 
 	return true
 }
+
+func checkIdentifier(t *testing.T, exp ast.Expression, value string) bool {
+	ident, ok := exp.(*ast.Identifier)
+	if !ok {
+		t.Errorf("exp is not ast.Identifier. got=%T", exp)
+		return false
+	}
+	if ident.Value != value {
+		t.Errorf("ident.Value not %s. got=%s", value, ident.Value)
+		return false
+	}
+	if ident.TokenLiteral() != value {
+		t.Errorf("ident.TokenLiteral not %s. got=%s", value, ident.TokenLiteral())
+		return false
+	}
+	return true
+}
+
+func checkLiteralExpression(t *testing.T, exp ast.Expression, expected interface{}) bool {
+	switch v := expected.(type) {
+	case int:
+		return checkIntegerLiteral(t, exp, int64(v))
+	case int64:
+		return checkIntegerLiteral(t, exp, v)
+	case string:
+		return checkIdentifier(t, exp, v)
+	}
+	t.Errorf("type of exp not handled. got=%T", exp)
+	return false
+}
+
+func checkPrefixExpression(t *testing.T, exp ast.Expression, intExp int64, operator string) bool {
+	opExp, ok := exp.(*ast.PrefixExpression)
+	if !ok {
+		t.Errorf("exp is not ast.OperatorExpression. got=%T(%s)", exp, exp)
+		return false
+	}
+	if !checkLiteralExpression(t, opExp.Right, intExp) {
+		return false
+	}
+	if opExp.Operator != operator {
+		t.Errorf("opExp.Operator is not %s. got=%s", operator, opExp.Operator)
+	}
+	return true
+}
+
+func checkInflixExpression(
+	t *testing.T,
+	exp ast.Expression,
+	left, right interface{},
+	operator string,
+) bool {
+	opExp, ok := exp.(*ast.InfixExpression)
+	if !ok {
+		t.Errorf("exp is not ast.OperatorExpression. got=%T(%s)", exp, exp)
+		return false
+	}
+	if !checkLiteralExpression(t, opExp.Left, left) {
+		return false
+	}
+	if !checkLiteralExpression(t, opExp.Right, right) {
+		return false
+	}
+	if opExp.Operator != operator {
+		t.Errorf("opExp.Operator is not %s. got=%s", operator, opExp.Operator)
+	}
+	return true
+}
+
+func checkExpressionStatement(t *testing.T, program *ast.Program) *ast.ExpressionStatement {
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf(
+			"program.Statements[0] is not ast.ExpressionStatement. got=%T",
+			program.Statements[0],
+		)
+	}
+	return stmt
+}

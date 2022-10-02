@@ -59,13 +59,7 @@ func TestIdentifierExpression(t *testing.T) {
 	program, parser := programSetup(t, input, 1)
 	checkParserErrors(t, parser, 0)
 
-	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
-	if !ok {
-		t.Fatalf(
-			"program.Statements[0] is not ast.ExpressionStatement. got=%T",
-			program.Statements[0],
-		)
-	}
+	stmt := checkExpressionStatement(t, program)
 
 	ident, ok := stmt.Expression.(*ast.Identifier)
 	if !ok {
@@ -87,13 +81,7 @@ func TestIntegerLiteralExpression(t *testing.T) {
 	program, parser := programSetup(t, input, 1)
 	checkParserErrors(t, parser, 0)
 
-	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
-	if !ok {
-		t.Fatalf(
-			"program.Statements[0] is not ast.ExpressionStatement. got=%T",
-			program.Statements[0],
-		)
-	}
+	stmt := checkExpressionStatement(t, program)
 
 	intLiteral, ok := stmt.Expression.(*ast.IntegerLiteral)
 	if !ok {
@@ -124,24 +112,8 @@ func TestPrefixExpressions(t *testing.T) {
 		program, parser := programSetup(t, tt.input, 1)
 		checkParserErrors(t, parser, 0)
 
-		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
-		if !ok {
-			t.Fatalf(
-				"program.Statements[0] is not ast.ExpressionStatement. got=%T",
-				program.Statements[0],
-			)
-		}
-
-		exp, ok := stmt.Expression.(*ast.PrefixExpression)
-		if !ok {
-			t.Fatalf("exp is not ast.PrefixExpression. got=%T", stmt.Expression)
-		}
-		if exp.Operator != tt.operator {
-			t.Fatalf("exp.Operator is not %s. got=%s", tt.operator, exp.Operator)
-		}
-		if !checkIntegerLiteral(t, exp.Right, tt.integerValue) {
-			return
-		}
+		stmt := checkExpressionStatement(t, program)
+		checkPrefixExpression(t, stmt.Expression, tt.integerValue, tt.operator)
 	}
 }
 
@@ -166,29 +138,11 @@ func TestInfixExpressions(t *testing.T) {
 		program, parser := programSetup(t, tt.input, 1)
 		checkParserErrors(t, parser, 0)
 
-		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
-		if !ok {
-			t.Fatalf(
-				"program.Statements[0] is not ast.ExpressionStatement. got=%T",
-				program.Statements[0],
-			)
-		}
-
-		exp, ok := stmt.Expression.(*ast.InfixExpression)
-		if !ok {
-			t.Fatalf("exp is not ast.InfixExpression. got=%T", stmt.Expression)
-		}
-		if !checkIntegerLiteral(t, exp.Left, tt.leftValue) {
-			return
-		}
-		if exp.Operator != tt.operator {
-			t.Fatalf("exp.Operator is not %s. got=%s", tt.operator, exp.Operator)
-		}
-		if !checkIntegerLiteral(t, exp.Right, tt.rightValue) {
-			return
-		}
+		stmt := checkExpressionStatement(t, program)
+		checkInflixExpression(t, stmt.Expression, tt.leftValue, tt.rightValue, tt.operator)
 	}
 }
+
 func TestOperatorPrecedenceParsing(t *testing.T) {
 	tests := []struct {
 		input    string
