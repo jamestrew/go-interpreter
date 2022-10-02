@@ -103,6 +103,26 @@ func checkIdentifier(t *testing.T, exp ast.Expression, value string) bool {
 	return true
 }
 
+func checkBooleanLiteral(t *testing.T, exp ast.Expression, value bool) bool {
+	bo, ok := exp.(*ast.Boolean)
+	if !ok {
+		t.Errorf("exp not *ast.Boolean. got=%T", exp)
+		return false
+	}
+
+	if bo.Value != value {
+		t.Errorf("bo.Value not %t. got=%t", value, bo.Value)
+		return false
+	}
+
+	if bo.TokenLiteral() != fmt.Sprintf("%t", value) {
+		t.Errorf("bo.TokenLiteral not %t. got=%s", value, bo.TokenLiteral())
+		return false
+	}
+
+	return true
+}
+
 func checkLiteralExpression(t *testing.T, exp ast.Expression, expected interface{}) bool {
 	switch v := expected.(type) {
 	case int:
@@ -111,6 +131,8 @@ func checkLiteralExpression(t *testing.T, exp ast.Expression, expected interface
 		return checkIntegerLiteral(t, exp, v)
 	case string:
 		return checkIdentifier(t, exp, v)
+	case bool:
+		return checkBooleanLiteral(t, exp, v)
 	}
 	t.Errorf("type of exp not handled. got=%T", exp)
 	return false

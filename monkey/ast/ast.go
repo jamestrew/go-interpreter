@@ -2,8 +2,7 @@ package ast
 
 import (
 	"bytes"
-
-	"github.com/jamestrew/go-interpreter/monkey/token"
+	"strings"
 )
 
 func (p *Program) TokenLiteral() string {
@@ -70,6 +69,10 @@ func (ie *InfixExpression) String() string {
 
 	return out.String()
 }
+
+func (b *Boolean) expressionNode()      {}
+func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
+func (b *Boolean) String() string       { return strings.ToLower(b.Token.Literal) }
 
 func (rs *ReturnStatement) statementNode()       {}
 func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal }
