@@ -138,13 +138,18 @@ func checkLiteralExpression(t *testing.T, exp ast.Expression, expected interface
 	return false
 }
 
-func checkPrefixExpression(t *testing.T, exp ast.Expression, intExp int64, operator string) bool {
+func checkPrefixExpression(
+	t *testing.T,
+	exp ast.Expression,
+	value interface{},
+	operator string,
+) bool {
 	opExp, ok := exp.(*ast.PrefixExpression)
 	if !ok {
 		t.Errorf("exp is not ast.OperatorExpression. got=%T(%s)", exp, exp)
 		return false
 	}
-	if !checkLiteralExpression(t, opExp.Right, intExp) {
+	if !checkLiteralExpression(t, opExp.Right, value) {
 		return false
 	}
 	if opExp.Operator != operator {
