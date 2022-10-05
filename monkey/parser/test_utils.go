@@ -158,7 +158,7 @@ func checkPrefixExpression(
 	return true
 }
 
-func checkInflixExpression(
+func checkInfixExpression(
 	t *testing.T,
 	exp ast.Expression,
 	left, right interface{},

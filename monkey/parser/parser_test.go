@@ -144,7 +144,7 @@ func TestInfixExpressions(t *testing.T) {
 		checkParserErrors(t, parser, 0)
 
 		stmt := checkExpressionStatement(t, program)
-		checkInflixExpression(t, stmt.Expression, tt.leftValue, tt.rightValue, tt.operator)
+		checkInfixExpression(t, stmt.Expression, tt.leftValue, tt.rightValue, tt.operator)
 	}
 }
 
