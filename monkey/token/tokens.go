@@ -2,29 +2,27 @@ package token
 
 const (
 	ILLEGAL = "ILLEGAL"
-	EOF = "EOF"
+	EOF     = "EOF"
 
 	IDENT = "IDENT"
-	INT = "INT"
+	INT   = "INT"
 
-	ASSIGN = "="
-	PLUS = "+"
-	MINUS = "-"
-	BANG = "!"
+	ASSIGN   = "="
+	PLUS     = "+"
+	MINUS    = "-"
+	BANG     = "!"
 	ASTERISK = "*"
-	SLASH = "/"
+	SLASH    = "/"
 
-	EQ = "=="
+	EQ     = "=="
 	NOT_EQ = "!="
-	LT = "<"
-	GT = ">"
-	LT_EQ = "<="
-	GT_EQ = ">="
+	LT     = "<"
+	GT     = ">"
+	LT_EQ  = "<="
+	GT_EQ  = ">="
 
-
-	COMMA = ","
+	COMMA     = ","
 	SEMICOLON = ";"
-
 
 	LPAREN = "("
 	RPAREN = ")"
@@ -33,10 +31,10 @@ const (
 
 	// keywords
 	FUNCTION = "FUNCTION"
-	LET = "LET"
-	TRUE = "TRUE"
-	FALSE = "FALSE"
-	RETURN = "RETURN"
-	IF = "IF"
-	ELSE = "ELSE"
+	LET      = "LET"
+	TRUE     = "TRUE"
+	FALSE    = "FALSE"
+	RETURN   = "RETURN"
+	IF       = "IF"
+	ELSE     = "ELSE"
 )
