@@ -12,6 +12,8 @@ type Statement interface {
 }
 
 type BlockStatement struct {
+	Token      token.Token
+	Statements []Statement
 }
 
 type LetStatement struct {
@@ -28,6 +30,18 @@ type ReturnStatement struct {
 type ExpressionStatement struct {
 	Token      token.Token
 	Expression Expression
+}
+
+func (bs *BlockStatement) statementNode()       {}
+func (bs *BlockStatement) TokenLiteral() string { return bs.Token.Literal }
+func (bs *BlockStatement) String() string {
+	var out bytes.Buffer
+
+	for _, stmt := range bs.Statements {
+		out.WriteString(stmt.String())
+	}
+
+	return out.String()
 }
 
 func (ls *LetStatement) statementNode()       {}
