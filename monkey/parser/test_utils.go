@@ -27,7 +27,7 @@ func programSetup(t *testing.T, input string, stmtCnt int) (*ast.Program, *Parse
 	return program, parser
 }
 
-func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
+func checkLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	if s.TokenLiteral() != "let" {
 		t.Errorf("s.TokenLiteral not 'let'. got=%q", s.TokenLiteral())
 		return false

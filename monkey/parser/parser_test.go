@@ -8,40 +8,45 @@ import (
 )
 
 func TestLetStatements(t *testing.T) {
-	input := `
-	let x = 5;
-	let y = 10;
-	let foobar = 838383;
-	`
-	program, parser := programSetup(t, input, 3)
-	checkParserErrors(t, parser, 0)
-
 	tests := []struct {
+		input              string
 		expectedIdentifier string
+		expectedValue      interface{}
 	}{
-		{"x"},
-		{"y"},
-		{"foobar"},
+		{"let x = 5;", "x", 5},
+		{"let y = true;", "y", true},
+		{"let foobar = y;", "foobar", "y"},
 	}
 
-	for i, tt := range tests {
-		stmt := program.Statements[i]
-		if !testLetStatement(t, stmt, tt.expectedIdentifier) {
+	for _, tt := range tests {
+		program, parser := programSetup(t, tt.input, 1)
+		checkParserErrors(t, parser, 0)
+		stmt := program.Statements[0]
+		if !checkLetStatement(t, stmt, tt.expectedIdentifier) {
+			return
+		}
+
+		val := stmt.(*ast.LetStatement).Value
+		if !checkLiteralExpression(t, val, tt.expectedValue) {
 			return
 		}
 	}
 }
 
 func TestReturnStatement(t *testing.T) {
-	input := `
-	return 5;
-	return 10;
-	return add(15);
-	`
-	program, parser := programSetup(t, input, 3)
-	checkParserErrors(t, parser, 0)
+	tests := []struct {
+		input         string
+		expectedValue interface{}
+	}{
+		{"return 5;", 5},
+		{"return true;", true},
+		{"return foobar;", "foobar"},
+	}
 
-	for _, stmt := range program.Statements {
+	for _, tt := range tests {
+		program, parser := programSetup(t, tt.input, 1)
+		checkParserErrors(t, parser, 0)
+		stmt := program.Statements[0]
 		returnStmt, ok := stmt.(*ast.ReturnStatement)
 		if !ok {
 			t.Errorf("stmt not *ast.ReturnStatement. got=%T", stmt)
@@ -49,6 +54,11 @@ func TestReturnStatement(t *testing.T) {
 		}
 		if returnStmt.TokenLiteral() != "return" {
 			t.Errorf("ReturnStatement.TokenLiteral not 'return', got %q", returnStmt.TokenLiteral())
+		}
+
+		val := stmt.(*ast.ReturnStatement).Value
+		if !checkLiteralExpression(t, val, tt.expectedValue) {
+			return
 		}
 	}
 }
