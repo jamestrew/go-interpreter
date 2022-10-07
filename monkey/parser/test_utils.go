@@ -89,7 +89,7 @@ func checkIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 func checkIdentifier(t *testing.T, exp ast.Expression, value string) bool {
 	ident, ok := exp.(*ast.Identifier)
 	if !ok {
-		t.Errorf("exp is not ast.Identifier. got=%T", exp)
+		t.Errorf("exp is not ast.Identifier. got=%T, value=%s", exp, value)
 		return false
 	}
 	if ident.Value != value {

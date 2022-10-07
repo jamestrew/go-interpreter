@@ -175,6 +175,13 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 		{"2 / (5 + 5)", "(2 / (5 + 5))", 1},
 		{"-(5 + 5)", "(-(5 + 5))", 1},
 		{"!(true == true)", "(!(true == true))", 1},
+		{"a + add(b * c) + d", "((a + add((b * c))) + d)", 1},
+		{
+			"add(a, b, 1, 2 * 3, 4 + 5, add(6, 7 * 8))",
+			"add(a, b, 1, (2 * 3), (4 + 5), add(6, (7 * 8)))",
+			1,
+		},
+		{"add(a + b + c * d / f + g)", "add((((a + b) + ((c * d) / f)) + g))", 1},
 	}
 
 	for _, tt := range tests {
@@ -364,4 +371,28 @@ func TestFunctionParamter(t *testing.T) {
 			checkLiteralExpression(t, function.Parameters[i], param)
 		}
 	}
+}
+
+func TestCallExpression(t *testing.T) {
+	input := "add(1, 2 * 3, 4 + 5);"
+	program, parser := programSetup(t, input, 1)
+	checkParserErrors(t, parser, 0)
+
+	stmt := checkExpressionStatement(t, program)
+	exp, ok := stmt.Expression.(*ast.CallExpression)
+	if !ok {
+		t.Fatalf("stmt is not ast.CallExpression. got=%T", stmt.Expression)
+	}
+
+	if !checkIdentifier(t, exp.Function, "add") {
+		return
+	}
+
+	if len(exp.Arguments) != 3 {
+		t.Fatalf("%s has 3 arguments. got=%d", input, len(exp.Arguments))
+	}
+
+	checkLiteralExpression(t, exp.Arguments[0], 1)
+	checkInfixExpression(t, exp.Arguments[1], 2, 3, "*")
+	checkInfixExpression(t, exp.Arguments[2], 4, 5, "+")
 }
