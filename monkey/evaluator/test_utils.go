@@ -50,3 +50,12 @@ func testBooleanObject(t *testing.T, obj object.Object, input string, expected b
 	}
 	return true
 }
+
+func testNullObject(t *testing.T, obj object.Object, input string) bool {
+	_, ok := obj.(*object.Null)
+	if !ok {
+		t.Errorf("object (%s) is not null. got=%T (%+v)", input, obj, obj)
+		return false
+	}
+	return true
+}
