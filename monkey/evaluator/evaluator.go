@@ -8,6 +8,11 @@ import (
 	"github.com/jamestrew/go-interpreter/monkey/object"
 )
 
+var (
+	TRUE = &object.Boolean{Value: true}
+	FALSE = &object.Boolean{Value: false}
+)
+
 func Eval(node ast.Node) object.Object {
 	switch node := node.(type) {
 	case *ast.Program:
@@ -17,7 +22,7 @@ func Eval(node ast.Node) object.Object {
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
 	case *ast.Boolean:
-		return &object.Boolean{Value: node.Value}
+		return nativeBoolToBooleanObject(node.Value)
 	default:
 		fmt.Printf("Eval: node type not handled: %s\n", reflect.TypeOf(node))
 	}
@@ -31,4 +36,11 @@ func evalStatements(statements []ast.Statement) object.Object {
 		result = Eval(stmt)
 	}
 	return result
+}
+
+func nativeBoolToBooleanObject(input bool) *object.Boolean {
+	if input {
+		return TRUE
+	}
+	return FALSE
 }
