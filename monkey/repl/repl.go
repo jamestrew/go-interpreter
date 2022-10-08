@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/jamestrew/go-interpreter/monkey/evaluator"
 	"github.com/jamestrew/go-interpreter/monkey/lexer"
 	"github.com/jamestrew/go-interpreter/monkey/parser"
 )
@@ -29,8 +30,7 @@ func Start(in io.Reader, out io.Writer) {
 		}
 
 		line := scanner.Text()
-		lexer := lexer.New(line)
-		p := parser.New(lexer)
+		p := parser.New(lexer.New(line))
 
 		program := p.ParseProgram()
 		if len(p.Errors()) != 0 {
@@ -38,7 +38,8 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		io.WriteString(out, program.String())
+		evaluated := evaluator.Eval(program)
+		io.WriteString(out, evaluated.Inspect())
 		io.WriteString(out, "\n")
 	}
 }
