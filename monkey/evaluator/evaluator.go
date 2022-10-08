@@ -16,6 +16,8 @@ func Eval(node ast.Node) object.Object {
 		return Eval(node.Expression)
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
+	case *ast.Boolean:
+		return &object.Boolean{Value: node.Value}
 	default:
 		fmt.Printf("Eval: node type not handled: %s\n", reflect.TypeOf(node))
 	}
