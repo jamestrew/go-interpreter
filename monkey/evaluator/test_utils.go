@@ -35,7 +35,8 @@ func testBooleanObject(t *testing.T, obj object.Object, input string, expected b
 	myBool, ok := obj.(*object.Boolean)
 	if !ok {
 		t.Errorf(
-			"object is not an Boolean with expected value %t. got=%T (%+v)",
+			"object (%s) is not an Boolean with expected value %t. got=%T (%+v)",
+			input,
 			expected,
 			obj,
 			obj,

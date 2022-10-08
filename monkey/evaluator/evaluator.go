@@ -98,25 +98,42 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 	}
 }
 
-func evalInfixExpression(
-	operator string,
-	left object.Object,
-	right object.Object,
-) object.Object {
+func evalIntegerInfixExpression(operator string, left, right object.Object) object.Object {
+	leftValue := left.(*object.Integer).Value
+	rightValue := right.(*object.Integer).Value
 	switch operator {
 	case "+":
-		value := left.(*object.Integer).Value + right.(*object.Integer).Value
-		return &object.Integer{Value: value}
+		return &object.Integer{Value: leftValue + rightValue}
 	case "-":
-		value := left.(*object.Integer).Value - right.(*object.Integer).Value
-		return &object.Integer{Value: value}
+		return &object.Integer{Value: leftValue - rightValue}
 	case "*":
-		value := left.(*object.Integer).Value * right.(*object.Integer).Value
-		return &object.Integer{Value: value}
+		return &object.Integer{Value: leftValue * rightValue}
 	case "/":
-		value := left.(*object.Integer).Value / right.(*object.Integer).Value
-		return &object.Integer{Value: value}
+		return &object.Integer{Value: leftValue / rightValue}
+	case ">":
+		return nativeBoolToBooleanObject(leftValue > rightValue)
+	case "<":
+		return nativeBoolToBooleanObject(leftValue < rightValue)
+	case "==":
+		return nativeBoolToBooleanObject(leftValue == rightValue)
+	case "!=":
+		return nativeBoolToBooleanObject(leftValue != rightValue)
 	default:
-		return NULL // TODO
+		return NULL
+	}
+}
+
+func evalInfixExpression(operator string, left, right object.Object) object.Object {
+	leftType := left.Type()
+	rightType := right.Type()
+	switch {
+	case leftType == object.INTEGER_OBJ && rightType == object.INTEGER_OBJ:
+		return evalIntegerInfixExpression(operator, left, right)
+	case operator == "==":
+		return nativeBoolToBooleanObject(left == right)
+	case operator != "==":
+		return nativeBoolToBooleanObject(left != right)
+	default:
+		return NULL
 	}
 }
