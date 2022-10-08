@@ -2,9 +2,6 @@ package evaluator
 
 import (
 	"testing"
-
-	"github.com/jamestrew/go-interpreter/monkey/object"
-	"github.com/jamestrew/go-interpreter/monkey/parser"
 )
 
 func TestEvalIntegerObject(t *testing.T) {
