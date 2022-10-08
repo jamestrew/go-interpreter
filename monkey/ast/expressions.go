@@ -132,7 +132,6 @@ func (fl *FunctionLiteral) String() string {
 	return out.String()
 }
 
-
 func (ce *CallExpression) expressionNode()      {}
 func (ce *CallExpression) TokenLiteral() string { return ce.Token.Literal }
 func (ce *CallExpression) String() string {
