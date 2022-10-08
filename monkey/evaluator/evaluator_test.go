@@ -30,6 +30,25 @@ func TestBooleanObject(t *testing.T) {
 
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-		testBooleanObject(t, evaluated, tt.expected)
+		testBooleanObject(t, evaluated, tt.input, tt.expected)
+	}
+}
+
+func TestBangOperator(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected bool
+	}{
+		{"!true", false},
+		{"!!true", true},
+		{"!false", true},
+		{"!!false", false},
+		{"!5", false},
+		{"!!5", true},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		testBooleanObject(t, evaluated, tt.input, tt.expected)
 	}
 }
