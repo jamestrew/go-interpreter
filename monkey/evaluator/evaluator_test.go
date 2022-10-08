@@ -47,6 +47,8 @@ func TestBangOperator(t *testing.T) {
 		{"!!false", false},
 		{"!5", false},
 		{"!!5", true},
+		{"!0", true},
+		{"!!0", false},
 	}
 
 	for _, tt := range tests {

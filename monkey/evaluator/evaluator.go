@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	NULL = &object.Null{}
+	NULL  = &object.Null{}
 	TRUE  = &object.Boolean{Value: true}
 	FALSE = &object.Boolean{Value: false}
 )
@@ -59,21 +59,18 @@ func objectTruthy(obj object.Object) *object.Boolean {
 		}
 	case *object.Boolean:
 		return obj
+	case *object.Null:
+		return FALSE
+	default:
+		return TRUE
 	}
-	return FALSE
 }
 
 func evalBangOperator(right object.Object) object.Object {
-	switch right {
-	case TRUE:
-		return FALSE
-	case FALSE:
-		return TRUE
-	case NULL:
-		return TRUE
-	default:
+	if objectTruthy(right) == TRUE {
 		return FALSE
 	}
+	return TRUE
 }
 
 func evalMinusPrefixOperator(right object.Object) object.Object {
