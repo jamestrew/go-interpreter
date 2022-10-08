@@ -53,25 +53,21 @@ func nativeBoolToBooleanObject(input bool) *object.Boolean {
 	return FALSE
 }
 
-func objectTruthy(obj object.Object) *object.Boolean {
+func isObjTruthy(obj object.Object) bool {
 	switch obj := obj.(type) {
 	case *object.Integer:
-		if obj.Value == 0 {
-			return FALSE
-		} else {
-			return TRUE
-		}
+		return obj.Value != 0
 	case *object.Boolean:
-		return obj
+		return obj.Value
 	case *object.Null:
-		return FALSE
+		return false
 	default:
-		return TRUE
+		return true
 	}
 }
 
 func evalBangOperator(right object.Object) object.Object {
-	if objectTruthy(right) == TRUE {
+	if isObjTruthy(right) {
 		return FALSE
 	}
 	return TRUE
