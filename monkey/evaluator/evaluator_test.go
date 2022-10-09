@@ -28,7 +28,7 @@ func TestEvalIntegerObject(t *testing.T) {
 
 	for _, tt := range tests {
 		evaluated := testEval(tt.input)
-		testIntegerObject(t, evaluated, tt.expected)
+		testIntegerObject(t, evaluated, tt.input, tt.expected)
 	}
 }
 
@@ -103,9 +103,26 @@ func TestIfElseExpressions(t *testing.T) {
 		evaluated := testEval(tt.input)
 		integer, ok := tt.expected.(int)
 		if ok {
-			testIntegerObject(t, evaluated, int64(integer))
+			testIntegerObject(t, evaluated, tt.input, int64(integer))
 		} else {
 			testNullObject(t, evaluated, tt.input)
 		}
+	}
+}
+
+func TestReturnStatements(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"return 10;", 10},
+		{"return 10; 9;", 10},
+		{"return 2 * 5; 9;", 10},
+		{"9; return 2 * 5; 9;", 10},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		testIntegerObject(t, evaluated, tt.input, tt.expected)
 	}
 }

@@ -12,11 +12,12 @@ func testEval(input string) object.Object {
 	return Eval(program)
 }
 
-func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
+func testIntegerObject(t *testing.T, obj object.Object, input string, expected int64) bool {
 	myInt, ok := obj.(*object.Integer)
 	if !ok {
 		t.Errorf(
-			"object is not an Integer with expected value %d. got=%T (%+v)",
+			"object (%s) is not an Integer with expected value %d. got=%T (%+v)",
+			input,
 			expected,
 			obj,
 			obj,
@@ -25,7 +26,7 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 	}
 
 	if myInt.Value != expected {
-		t.Errorf("object has wrong value. got=%d, expected=%d", myInt.Value, expected)
+		t.Errorf("object (%s) has wrong value. got=%d, expected=%d", input, myInt.Value, expected)
 		return false
 	}
 	return true
