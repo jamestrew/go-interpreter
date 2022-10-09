@@ -131,7 +131,7 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 		return evalIntegerInfixExpression(operator, left, right)
 	case operator == "==":
 		return nativeBoolToBooleanObject(left == right)
-	case operator != "==":
+	case operator == "!=":
 		return nativeBoolToBooleanObject(left != right)
 	default:
 		return NULL
