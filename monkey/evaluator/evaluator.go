@@ -42,6 +42,10 @@ func (e *Evaluator) Eval(node ast.Node) object.Object {
 		return e.evalLetStatement(node)
 	case *ast.Identifier:
 		return e.evalIdentifier(node)
+	case *ast.FunctionLiteral:
+		return e.evalFunctionLiteral(node)
+	case *ast.CallExpression:
+		return e.evalCallExpression(node)
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
 	case *ast.Boolean:

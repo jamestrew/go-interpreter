@@ -162,3 +162,47 @@ func (e *Evaluator) evalIdentifier(i *ast.Identifier) object.Object {
 	}
 	return val
 }
+
+func (e *Evaluator) evalFunctionLiteral(fl *ast.FunctionLiteral) object.Object {
+	params := fl.Parameters
+	body := fl.Body
+	return &object.Function{Parameters: params, Body: body, Env: e.env}
+}
+
+func (e *Evaluator) evalCallExpression(ce *ast.CallExpression) object.Object {
+	function := e.Eval(ce.Function)
+	if isError(function) {
+		return function
+	}
+
+	fn, ok := function.(*object.Function)
+	if !ok {
+		return newError("not a function: %s", function.Type())
+	}
+
+	args := e.evalExpressions(ce.Arguments)
+	if len(args) == 1 && isError(args[0]) {
+		return args[0]
+	}
+
+
+	fn.Env = object.NewEnclosedEnvironment(e.env)
+	for paramIdx, param := range fn.Parameters {
+		fn.Env.Set(param.Value, args[paramIdx])
+	}
+
+	return New(fn.Env).Eval(fn.Body)
+}
+
+func (e *Evaluator) evalExpressions(expressions []ast.Expression) []object.Object {
+	var result []object.Object
+	for _, expression := range expressions {
+		expObj := e.Eval(expression)
+		if isError(expObj) {
+			return []object.Object{expObj}
+		}
+		result = append(result, expObj)
+	}
+
+	return result
+}
