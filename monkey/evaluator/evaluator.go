@@ -21,12 +21,9 @@ func Eval(node ast.Node) object.Object {
 	case *ast.ExpressionStatement:
 		return Eval(node.Expression)
 	case *ast.PrefixExpression:
-		right := Eval(node.Right)
-		return evalPrefixExpression(node.Operator, right)
+		return evalPrefixExpression(node)
 	case *ast.InfixExpression:
-		left := Eval(node.Left)
-		right := Eval(node.Right)
-		return evalInfixExpression(node.Operator, left, right)
+		return evalInfixExpression(node)
 	case *ast.IfExpression:
 		return evalIfExpression(node)
 	case *ast.BlockStatement:
@@ -95,14 +92,20 @@ func evalMinusPrefixOperator(right object.Object) object.Object {
 	return intObj
 }
 
-func evalPrefixExpression(operator string, right object.Object) object.Object {
-	switch operator {
+func evalPrefixExpression(pe *ast.PrefixExpression) object.Object {
+	right := Eval(pe.Right)
+
+	if isError(right) {
+		return right
+	}
+
+	switch pe.Operator {
 	case "!":
 		return evalBangOperator(right)
 	case "-":
 		return evalMinusPrefixOperator(right)
 	default:
-		return newError("unknown operator: %s%s", operator, right.Type())
+		return newError("unknown operator: %s%s", pe.Operator, right.Type())
 	}
 }
 
@@ -131,25 +134,38 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 	}
 }
 
-func evalInfixExpression(operator string, left, right object.Object) object.Object {
+func evalInfixExpression(ie *ast.InfixExpression) object.Object {
+	left := Eval(ie.Left)
+	if isError(left) {
+		return left
+	}
+
+	right := Eval(ie.Right)
+	if isError(right) {
+		return right
+	}
+
 	leftType := left.Type()
 	rightType := right.Type()
 	switch {
 	case leftType == object.INTEGER_OBJ && rightType == object.INTEGER_OBJ:
-		return evalIntegerInfixExpression(operator, left, right)
-	case operator == "==":
+		return evalIntegerInfixExpression(ie.Operator, left, right)
+	case ie.Operator == "==":
 		return nativeBoolToBooleanObject(left == right)
-	case operator == "!=":
+	case ie.Operator == "!=":
 		return nativeBoolToBooleanObject(left != right)
 	case leftType != rightType:
-		return newError("type mismatch: %s %s %s", leftType, operator, rightType)
+		return newError("type mismatch: %s %s %s", leftType, ie.Operator, rightType)
 	default:
-		return newError("unknown operator: %s %s %s", leftType, operator, rightType)
+		return newError("unknown operator: %s %s %s", leftType, ie.Operator, rightType)
 	}
 }
 
 func evalIfExpression(ie *ast.IfExpression) object.Object {
 	condition := Eval(ie.Condition)
+	if isError(condition) {
+		return condition
+	}
 	if isObjTruthy(condition) {
 		return Eval(ie.Consequence)
 	} else if ie.Alternative != nil {
@@ -177,6 +193,9 @@ func evalBlockStatement(statements []ast.Statement) object.Object {
 
 func evalReturnStatement(rs *ast.ReturnStatement) object.Object {
 	value := Eval(rs.Value)
+	if isError(value) {
+		return value
+	}
 	ret := &object.ReturnValue{Value: value}
 	return ret
 }
