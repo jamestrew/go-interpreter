@@ -5,11 +5,11 @@ import (
 	"github.com/jamestrew/go-interpreter/monkey/object"
 )
 
-func evalProgram(statements []ast.Statement) object.Object {
+func (e *Evaluator) evalProgram(statements []ast.Statement) object.Object {
 	var result object.Object
 
 	for _, stmt := range statements {
-		result = Eval(stmt)
+		result = e.Eval(stmt)
 		switch result := result.(type) {
 		case *object.ReturnValue:
 			return result.Value
@@ -37,8 +37,8 @@ func evalMinusPrefixOperator(right object.Object) object.Object {
 	return intObj
 }
 
-func evalPrefixExpression(pe *ast.PrefixExpression) object.Object {
-	right := Eval(pe.Right)
+func (e *Evaluator) evalPrefixExpression(pe *ast.PrefixExpression) object.Object {
+	right := e.Eval(pe.Right)
 
 	if isError(right) {
 		return right
@@ -79,13 +79,13 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 	}
 }
 
-func evalInfixExpression(ie *ast.InfixExpression) object.Object {
-	left := Eval(ie.Left)
+func (e *Evaluator) evalInfixExpression(ie *ast.InfixExpression) object.Object {
+	left := e.Eval(ie.Left)
 	if isError(left) {
 		return left
 	}
 
-	right := Eval(ie.Right)
+	right := e.Eval(ie.Right)
 	if isError(right) {
 		return right
 	}
@@ -106,25 +106,25 @@ func evalInfixExpression(ie *ast.InfixExpression) object.Object {
 	}
 }
 
-func evalIfExpression(ie *ast.IfExpression) object.Object {
-	condition := Eval(ie.Condition)
+func (e *Evaluator) evalIfExpression(ie *ast.IfExpression) object.Object {
+	condition := e.Eval(ie.Condition)
 	if isError(condition) {
 		return condition
 	}
 	if isObjTruthy(condition) {
-		return Eval(ie.Consequence)
+		return e.Eval(ie.Consequence)
 	} else if ie.Alternative != nil {
-		return Eval(ie.Alternative)
+		return e.Eval(ie.Alternative)
 	} else {
 		return NULL
 	}
 }
 
-func evalBlockStatement(statements []ast.Statement) object.Object {
+func (e *Evaluator) evalBlockStatement(statements []ast.Statement) object.Object {
 	var result object.Object
 
 	for _, stmt := range statements {
-		result = Eval(stmt)
+		result = e.Eval(stmt)
 		switch result := result.(type) {
 		case *object.ReturnValue:
 			return result
@@ -136,11 +136,19 @@ func evalBlockStatement(statements []ast.Statement) object.Object {
 	return result
 }
 
-func evalReturnStatement(rs *ast.ReturnStatement) object.Object {
-	value := Eval(rs.Value)
+func (e *Evaluator) evalReturnStatement(rs *ast.ReturnStatement) object.Object {
+	value := e.Eval(rs.Value)
 	if isError(value) {
 		return value
 	}
 	ret := &object.ReturnValue{Value: value}
 	return ret
+}
+
+func (e *Evaluator) evalLetStatement(ls *ast.LetStatement) object.Object {
+	val := e.Eval(ls.Value)
+	if isError(val) {
+		return val
+	}
+	return val // TODO
 }

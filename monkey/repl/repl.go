@@ -7,6 +7,7 @@ import (
 
 	"github.com/jamestrew/go-interpreter/monkey/evaluator"
 	"github.com/jamestrew/go-interpreter/monkey/lexer"
+	"github.com/jamestrew/go-interpreter/monkey/object"
 	"github.com/jamestrew/go-interpreter/monkey/parser"
 )
 
@@ -22,6 +23,8 @@ func printParseErrors(out io.Writer, errors []string) {
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
+	env := object.NewEnvironment()
+	eval := evaluator.New(env)
 
 	for {
 		fmt.Printf(PROMPT)
@@ -38,7 +41,7 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		evaluated := evaluator.Eval(program)
+		evaluated := eval.Eval(program)
 		io.WriteString(out, evaluated.Inspect())
 		io.WriteString(out, "\n")
 	}

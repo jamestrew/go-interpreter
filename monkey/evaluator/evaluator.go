@@ -14,22 +14,32 @@ var (
 	FALSE = &object.Boolean{Value: false}
 )
 
-func Eval(node ast.Node) object.Object {
+type Evaluator struct {
+	env *object.Environment
+}
+
+func New(env *object.Environment) *Evaluator {
+	return &Evaluator{env: env}
+}
+
+func (e *Evaluator) Eval(node ast.Node) object.Object {
 	switch node := node.(type) {
 	case *ast.Program:
-		return evalProgram(node.Statements)
+		return e.evalProgram(node.Statements)
 	case *ast.ExpressionStatement:
-		return Eval(node.Expression)
+		return e.Eval(node.Expression)
 	case *ast.PrefixExpression:
-		return evalPrefixExpression(node)
+		return e.evalPrefixExpression(node)
 	case *ast.InfixExpression:
-		return evalInfixExpression(node)
+		return e.evalInfixExpression(node)
 	case *ast.IfExpression:
-		return evalIfExpression(node)
+		return e.evalIfExpression(node)
 	case *ast.BlockStatement:
-		return evalBlockStatement(node.Statements)
+		return e.evalBlockStatement(node.Statements)
 	case *ast.ReturnStatement:
-		return evalReturnStatement(node)
+		return e.evalReturnStatement(node)
+	case *ast.LetStatement:
+		return e.evalLetStatement(node)
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
 	case *ast.Boolean:
