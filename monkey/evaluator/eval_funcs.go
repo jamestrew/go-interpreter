@@ -150,5 +150,15 @@ func (e *Evaluator) evalLetStatement(ls *ast.LetStatement) object.Object {
 	if isError(val) {
 		return val
 	}
-	return val // TODO
+
+	e.env.Set(ls.Name.Value, val)
+	return val
+}
+
+func (e *Evaluator) evalIdentifier(i *ast.Identifier) object.Object {
+	val, ok := e.env.Get(i.Value)
+	if !ok {
+		return newError("identifier not found: %s", i.Value)
+	}
+	return val
 }
