@@ -42,7 +42,9 @@ func Start(in io.Reader, out io.Writer) {
 		}
 
 		evaluated := eval.Eval(program)
-		io.WriteString(out, evaluated.Inspect())
-		io.WriteString(out, "\n")
+		if evaluated != nil && evaluated.Type() != object.FUNCTION_OBJ {
+			io.WriteString(out, evaluated.Inspect())
+			io.WriteString(out, "\n")
+		}
 	}
 }

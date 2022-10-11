@@ -185,7 +185,6 @@ func (e *Evaluator) evalCallExpression(ce *ast.CallExpression) object.Object {
 		return args[0]
 	}
 
-
 	fn.Env = object.NewEnclosedEnvironment(e.env)
 	for paramIdx, param := range fn.Parameters {
 		fn.Env.Set(param.Value, args[paramIdx])
