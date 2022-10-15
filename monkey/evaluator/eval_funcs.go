@@ -79,6 +79,13 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 	}
 }
 
+func evalStringInfixExpression(operator string, left, right object.Object) object.Object {
+	if operator != "+" {
+		return infixOperatorError(left, right, operator)
+	}
+	return &object.String{Value: left.(*object.String).Value + right.(*object.String).Value}
+}
+
 func (e *Evaluator) evalInfixExpression(ie *ast.InfixExpression) object.Object {
 	left := e.Eval(ie.Left)
 	if isError(left) {
@@ -95,6 +102,8 @@ func (e *Evaluator) evalInfixExpression(ie *ast.InfixExpression) object.Object {
 	switch {
 	case leftType == object.INTEGER_OBJ && rightType == object.INTEGER_OBJ:
 		return evalIntegerInfixExpression(ie.Operator, left, right)
+	case leftType == object.STRING_OBJ && rightType == object.STRING_OBJ:
+		return evalStringInfixExpression(ie.Operator, left, right)
 	case ie.Operator == "==":
 		return nativeBoolToBooleanObject(left == right)
 	case ie.Operator == "!=":

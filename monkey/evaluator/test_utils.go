@@ -66,7 +66,7 @@ func testNullObject(t *testing.T, obj object.Object, input string) bool {
 func testStringObject(t *testing.T, obj object.Object, input string, expected string) bool {
 	myStr, ok := obj.(*object.String)
 	if !ok {
-		t.Errorf("object (%s) is not a String. got=%T", input, obj)
+		t.Errorf("object (%s) is not a String. got=%T (%v)", input, obj, obj)
 		return false
 	}
 

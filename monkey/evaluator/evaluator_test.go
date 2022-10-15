@@ -161,6 +161,7 @@ if (10 > 1) {
 			"unknown infix operation: BOOLEAN + BOOLEAN",
 		},
 		{"foobar", "identifier not found: foobar"},
+		{`"hello" - "world"`, "unknown infix operation: STRING - STRING"},
 	}
 
 	for _, tt := range tests {
@@ -254,11 +255,12 @@ addTwo(2);
 }
 
 func TestEvalStringObject(t *testing.T) {
-	tests := []struct{
-		input string
+	tests := []struct {
+		input    string
 		expected string
 	}{
 		{`"hello world"`, "hello world"},
+		{`"this is" + " cool"`, "this is cool"},
 	}
 
 	for _, tt := range tests {
