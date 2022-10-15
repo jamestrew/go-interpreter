@@ -6,6 +6,7 @@ const (
 
 	IDENT = "IDENT"
 	INT   = "INT"
+	STRING = "STRING"
 
 	ASSIGN   = "="
 	PLUS     = "+"
