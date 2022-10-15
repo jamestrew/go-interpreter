@@ -50,6 +50,8 @@ func (e *Evaluator) Eval(node ast.Node) object.Object {
 		return &object.Integer{Value: node.Value}
 	case *ast.Boolean:
 		return nativeBoolToBooleanObject(node.Value)
+	case *ast.StringLiteral:
+		return &object.String{Value: node.Value}
 	default:
 		fmt.Printf("Eval: node type not handled: %s\n", reflect.TypeOf(node))
 	}

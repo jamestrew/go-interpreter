@@ -252,3 +252,16 @@ addTwo(2);
 	`
 	testIntegerObject(t, testEval(input), input, 4)
 }
+
+func TestEvalStringObject(t *testing.T) {
+	tests := []struct{
+		input string
+		expected string
+	}{
+		{`"hello world"`, "hello world"},
+	}
+
+	for _, tt := range tests {
+		testStringObject(t, testEval(tt.input), tt.input, tt.expected)
+	}
+}
