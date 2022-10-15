@@ -75,7 +75,7 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 	case "!=":
 		return nativeBoolToBooleanObject(leftValue != rightValue)
 	default:
-		return newError("unknown operator: %s %s %s", left.Inspect(), operator, right.Type())
+		return infixOperatorError(left, right, operator)
 	}
 }
 
@@ -102,7 +102,7 @@ func (e *Evaluator) evalInfixExpression(ie *ast.InfixExpression) object.Object {
 	case leftType != rightType:
 		return newError("type mismatch: %s %s %s", leftType, ie.Operator, rightType)
 	default:
-		return newError("unknown operator: %s %s %s", leftType, ie.Operator, rightType)
+		return infixOperatorError(left, right, ie.Operator)
 	}
 }
 
