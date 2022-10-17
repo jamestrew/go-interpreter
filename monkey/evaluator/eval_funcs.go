@@ -165,11 +165,14 @@ func (e *Evaluator) evalLetStatement(ls *ast.LetStatement) object.Object {
 }
 
 func (e *Evaluator) evalIdentifier(i *ast.Identifier) object.Object {
-	val, ok := e.env.Get(i.Value)
-	if !ok {
-		return newError("identifier not found: %s", i.Value)
+	if val, ok := e.env.Get(i.Value); ok {
+		return val
 	}
-	return val
+
+	if builtin, ok := builtins[i.Value]; ok {
+		return builtin
+	}
+	return newError("identifier not found: %s", i.Value)
 }
 
 func (e *Evaluator) evalFunctionLiteral(fl *ast.FunctionLiteral) object.Object {
@@ -184,22 +187,12 @@ func (e *Evaluator) evalCallExpression(ce *ast.CallExpression) object.Object {
 		return function
 	}
 
-	fn, ok := function.(*object.Function)
-	if !ok {
-		return newError("not a function: %s", function.Type())
-	}
-
 	args := e.evalExpressions(ce.Arguments)
 	if len(args) == 1 && isError(args[0]) {
 		return args[0]
 	}
 
-	newEnv := object.NewEnclosedEnvironment(fn.Env)
-	for paramIdx, param := range fn.Parameters {
-		newEnv.Set(param.Value, args[paramIdx])
-	}
-
-	return New(newEnv).Eval(fn.Body)
+	return execFunction(function, args...)
 }
 
 func (e *Evaluator) evalExpressions(expressions []ast.Expression) []object.Object {
@@ -213,4 +206,24 @@ func (e *Evaluator) evalExpressions(expressions []ast.Expression) []object.Objec
 	}
 
 	return result
+}
+
+func extendFunctionEnv(fn *object.Function, args ...object.Object) *object.Environment {
+	newEnv := object.NewEnclosedEnvironment(fn.Env)
+	for paramIdx, param := range fn.Parameters {
+		newEnv.Set(param.Value, args[paramIdx])
+	}
+	return newEnv
+}
+
+func execFunction(obj object.Object, args ...object.Object) object.Object {
+	switch fn := obj.(type) {
+	case *object.Function:
+		newEnv := extendFunctionEnv(fn, args...)
+		return New(newEnv).Eval(fn.Body)
+	case *object.Builtin:
+		return fn.Fn(args...)
+	default:
+		return newError("not a function: %s", obj.Type())
+	}
 }
