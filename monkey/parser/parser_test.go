@@ -412,11 +412,9 @@ func TestStringLiteral(t *testing.T) {
 	program, parser := programSetup(t, input, 1)
 	checkParserErrors(t, parser, 0)
 
-	stmt := program.Statements[0].(*ast.ExpressionStatement)
-	literal, ok := stmt.Expression.(*ast.StringLiteral)
-	if !ok {
-		t.Fatalf("exp not *ast.StringLiteral. got=%T", stmt.Expression)
-	}
+	stmt := checkExpressionStatement(t, program)
+	checkStringLiteral(t, stmt.Expression, "hello world")
+}
 
 	if literal.Value != "hello world" {
 		t.Errorf("literal.Value not %q. got=%q", "hello world", literal.Value)

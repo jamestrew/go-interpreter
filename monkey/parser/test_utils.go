@@ -86,6 +86,20 @@ func checkIntegerLiteral(t *testing.T, il ast.Expression, value int64) bool {
 	return true
 }
 
+func checkStringLiteral(t *testing.T, sl ast.Expression, value string) bool {
+	literal, ok := sl.(*ast.StringLiteral)
+	if !ok {
+		t.Errorf("exp not *ast.StringLiteral. got=%T", sl)
+		return false
+	}
+
+	if literal.Value != "hello world" {
+		t.Errorf("literal.Value not %q. got=%q", "hello world", literal.Value)
+		return false
+	}
+	return true
+}
+
 func checkIdentifier(t *testing.T, exp ast.Expression, value string) bool {
 	ident, ok := exp.(*ast.Identifier)
 	if !ok {
