@@ -131,11 +131,11 @@ func (p *Parser) parseStringLiteral() ast.Expression {
 
 func (p *Parser) parseArrayLiteral() ast.Expression {
 	array := &ast.ArrayLiteral{Token: p.curToken}
-	array.Elements = p.parseWrappedCsv(token.RBRACKET)
+	array.Elements = p.parseExpressionList(token.RBRACKET)
 	return array
 }
 
-func (p *Parser) parseWrappedCsv(endToken token.TokenType) []ast.Expression {
+func (p *Parser) parseExpressionList(endToken token.TokenType) []ast.Expression {
 	csv := []ast.Expression{}
 
 	if p.peekTokenIs(endToken) {
@@ -160,7 +160,7 @@ func (p *Parser) parseWrappedCsv(endToken token.TokenType) []ast.Expression {
 
 func (p *Parser) parseCallExpression(function ast.Expression) ast.Expression {
 	call := &ast.CallExpression{Token: p.curToken, Function: function}
-	call.Arguments = p.parseWrappedCsv(token.RPAREN)
+	call.Arguments = p.parseExpressionList(token.RPAREN)
 	return call
 }
 

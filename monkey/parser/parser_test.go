@@ -423,6 +423,8 @@ func TestArrayLiteral(t *testing.T) {
 	}{
 		{`[1, 2]`, []interface{}{1, 2}},
 		{`["foo", "bar"]`, []interface{}{"foo", "bar"}},
+		{`[]`, []interface{}{}},
+		{`[1, "two", false]`, []interface{}{1, "two", false}},
 	}
 
 	for _, tt := range tests {
@@ -452,6 +454,8 @@ func TestArrayLiteral(t *testing.T) {
 				checkIntegerLiteral(t, arrElem, int64(elem))
 			case string:
 				checkStringLiteral(t, arrElem, elem)
+			case bool:
+				checkBooleanLiteral(t, arrElem, elem)
 			default:
 				t.Errorf("test doesn't not support element type %T", elem)
 			}
