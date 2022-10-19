@@ -93,8 +93,8 @@ func checkStringLiteral(t *testing.T, sl ast.Expression, value string) bool {
 		return false
 	}
 
-	if literal.Value != "hello world" {
-		t.Errorf("literal.Value not %q. got=%q", "hello world", literal.Value)
+	if literal.Value != value {
+		t.Errorf("literal.Value not %q. got=%q", value, literal.Value)
 		return false
 	}
 	return true
