@@ -161,7 +161,7 @@ func (sl *StringLiteral) String() string       { return sl.Token.Literal }
 
 type ArrayLiteral struct {
 	Token  token.Token
-	Values []Expression
+	Elements []Expression
 }
 
 func (al *ArrayLiteral) expressionNode()      {}
@@ -170,7 +170,7 @@ func (al *ArrayLiteral) String() string {
 	var out bytes.Buffer
 
 	elems := []string{}
-	for _, elem := range al.Values {
+	for _, elem := range al.Elements {
 		elems = append(elems, elem.String())
 	}
 

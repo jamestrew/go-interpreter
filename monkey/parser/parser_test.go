@@ -416,8 +416,46 @@ func TestStringLiteral(t *testing.T) {
 	checkStringLiteral(t, stmt.Expression, "hello world")
 }
 
-	if literal.Value != "hello world" {
-		t.Errorf("literal.Value not %q. got=%q", "hello world", literal.Value)
+func TestArrayLiteral(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected []interface{}
+	}{
+		{`[1, 2]`, []interface{}{1, 2}},
+		{`["foo", "bar"]`, []interface{}{"foo", "bar"}},
 	}
 
+	for _, tt := range tests {
+		program, parser := programSetup(t, tt.input, 1)
+		checkParserErrors(t, parser, 0)
+		stmt := checkExpressionStatement(t, program)
+
+		arrLit, ok := stmt.Expression.(*ast.ArrayLiteral)
+		if !ok {
+			t.Errorf("expected *ast.ArrayLiteral. got=%T", stmt.Expression)
+			continue
+		}
+
+		if len(arrLit.Elements) != len(tt.expected) {
+			t.Errorf(
+				"array len expected to have %d elements. got=%d",
+				len(tt.expected),
+				len(arrLit.Elements),
+			)
+			continue
+		}
+
+		for idx, elem := range tt.expected {
+			arrElem := arrLit.Elements[idx]
+			switch elem := elem.(type) {
+			case int:
+				checkIntegerLiteral(t, arrElem, int64(elem))
+			case string:
+				checkStringLiteral(t, arrElem, elem)
+			default:
+				t.Errorf("test doesn't not support element type %T", elem)
+			}
+		}
+
+	}
 }
