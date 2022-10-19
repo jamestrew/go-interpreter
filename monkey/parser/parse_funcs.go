@@ -130,50 +130,37 @@ func (p *Parser) parseStringLiteral() ast.Expression {
 }
 
 func (p *Parser) parseArrayLiteral() ast.Expression {
-	array := &ast.ArrayLiteral{Token: p.curToken }
-	elements := []ast.Expression{}
-
-	p.nextToken()
-	elements = append(elements, p.parseExpression(LOWEST))
-
-	for p.peekTokenIs(token.COMMA) {
-		p.nextToken()
-		p.nextToken()
-		elements = append(elements, p.parseExpression(LOWEST))
-	}
-
-	if !p.expectPeek(token.RBRACKET) {
-		return nil
-	}
-	array.Elements = elements
+	array := &ast.ArrayLiteral{Token: p.curToken}
+	array.Elements = p.parseWrappedCsv(token.RBRACKET)
 	return array
 }
 
-func (p *Parser) parseCallArguments() []ast.Expression {
-	args := []ast.Expression{}
-	if p.peekTokenIs(token.RPAREN) {
+func (p *Parser) parseWrappedCsv(endToken token.TokenType) []ast.Expression {
+	csv := []ast.Expression{}
+
+	if p.peekTokenIs(endToken) {
 		p.nextToken()
-		return args
+		return csv
 	}
 
 	p.nextToken()
-	args = append(args, p.parseExpression(LOWEST))
+	csv = append(csv, p.parseExpression(LOWEST))
 
 	for p.peekTokenIs(token.COMMA) {
 		p.nextToken()
 		p.nextToken()
-		args = append(args, p.parseExpression(LOWEST))
+		csv = append(csv, p.parseExpression(LOWEST))
 	}
 
-	if !p.expectPeek(token.RPAREN) {
+	if !p.expectPeek(endToken) {
 		return nil
 	}
-	return args
+	return csv
 }
 
 func (p *Parser) parseCallExpression(function ast.Expression) ast.Expression {
 	call := &ast.CallExpression{Token: p.curToken, Function: function}
-	call.Arguments = p.parseCallArguments()
+	call.Arguments = p.parseWrappedCsv(token.RPAREN)
 	return call
 }
 
