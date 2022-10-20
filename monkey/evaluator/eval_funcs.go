@@ -195,6 +195,14 @@ func (e *Evaluator) evalCallExpression(ce *ast.CallExpression) object.Object {
 	return execFunction(function, args...)
 }
 
+func (e *Evaluator) evalArrayLiteral(al *ast.ArrayLiteral) object.Object {
+	elements := e.evalExpressions(al.Elements)
+	if len(elements) == 1 && isError(elements[0]) {
+		return elements[0]
+	}
+	return &object.Array{Elements: elements}
+}
+
 func (e *Evaluator) evalExpressions(expressions []ast.Expression) []object.Object {
 	var result []object.Object
 	for _, expression := range expressions {

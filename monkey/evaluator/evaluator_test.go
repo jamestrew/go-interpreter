@@ -298,3 +298,39 @@ func TestBuiltinFunctions(t *testing.T) {
 		}
 	}
 }
+
+func TestArrayLiterals(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected []interface{}
+	}{
+		{`[1, 2]`, []interface{}{1, 2}},
+		{`["foo", "bar"]`, []interface{}{"foo", "bar"}},
+		{`[]`, []interface{}{}},
+		{`[1, "two", false]`, []interface{}{1, "two", false}},
+		{`[1, 1 * 2, 1 + 2]`, []interface{}{1, 2, 3}},
+	}
+
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		arr, ok := evaluated.(*object.Array)
+		if !ok {
+			t.Errorf("object is not Array. got=%T", evaluated)
+			continue
+		}
+
+		for idx, expectedElem := range tt.expected {
+			testElem := arr.Elements[idx]
+			switch expectedElem := expectedElem.(type) {
+			case int:
+				testIntegerObject(t, testElem, tt.input, int64(expectedElem))
+			case string:
+				testStringObject(t, testElem, tt.input, expectedElem)
+			case bool:
+				testBooleanObject(t, testElem, tt.input, expectedElem)
+			default:
+				t.Errorf("test doesn't support element of type %T", expectedElem)
+			}
+		}
+	}
+}
