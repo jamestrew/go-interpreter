@@ -164,6 +164,18 @@ func (p *Parser) parseCallExpression(function ast.Expression) ast.Expression {
 	return call
 }
 
+func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
+	exp := &ast.IndexExpression{Token: p.curToken, Left: left}
+
+	p.nextToken()
+	exp.Index = p.parseExpression(LOWEST)
+
+	if !p.expectPeek(token.RBRACKET) {
+		return nil
+	}
+	return exp
+}
+
 func (p *Parser) parseExpression(precedence int) ast.Expression {
 	prefixFn := p.prefixParseFns[p.curToken.Type]
 	if prefixFn == nil {

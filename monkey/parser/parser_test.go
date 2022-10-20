@@ -192,6 +192,8 @@ func TestOperatorPrecedenceParsing(t *testing.T) {
 			1,
 		},
 		{"add(a + b + c * d / f + g)", "add((((a + b) + ((c * d) / f)) + g))", 1},
+		{"a * [1, 2, 3, 4][b * c] * d", "((a * ([1, 2, 3, 4][(b * c)])) * d)", 1},
+		{"add(a * b[2], b[1], 2 * [1, 2][1])", "add((a * (b[2])), (b[1]), (2 * ([1, 2][1])))", 1},
 	}
 
 	for _, tt := range tests {
@@ -461,5 +463,26 @@ func TestArrayLiteral(t *testing.T) {
 			}
 		}
 
+	}
+}
+
+func TestParsingIndexExpressions(t *testing.T) {
+	input := "myArray[1 + 1]"
+
+	program, parser := programSetup(t, input, 1)
+	checkParserErrors(t, parser, 0)
+
+	stmt := checkExpressionStatement(t, program)
+	indexExp, ok := stmt.Expression.(*ast.IndexExpression)
+	if !ok {
+		t.Fatalf("exp not *ast.IndexExpression. got=%T'", stmt.Expression)
+	}
+
+	if !checkIdentifier(t, indexExp.Left, "myArray") {
+		return
+	}
+
+	if !checkInfixExpression(t, indexExp.Index, 1, 1, "+") {
+		return
 	}
 }
