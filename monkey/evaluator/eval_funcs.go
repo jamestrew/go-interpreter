@@ -203,6 +203,38 @@ func (e *Evaluator) evalArrayLiteral(al *ast.ArrayLiteral) object.Object {
 	return &object.Array{Elements: elements}
 }
 
+func evalArrayIndex(array, index object.Object) object.Object {
+	arr := array.(*object.Array)
+	idx := index.(*object.Integer)
+
+	maxIdx := len(arr.Elements)
+
+	if idx.Value >= 0 && idx.Value < int64(maxIdx) {
+		return arr.Elements[idx.Value]
+	} else if idx.Value < 0 {
+		return arr.Elements[maxIdx + int(idx.Value)]
+	}
+	return NULL
+}
+
+func (e *Evaluator) evalArrayIndexExpression(ie *ast.IndexExpression) object.Object {
+	left := e.Eval(ie.Left)
+	if isError(left) {
+		return left
+	}
+	index := e.Eval(ie.Index)
+	if isError(index) {
+		return index
+	}
+
+	switch {
+	case left.Type() == object.ARRAY_OBJ && index.Type() == object.INTEGER_OBJ:
+		return evalArrayIndex(left, index)
+	default:
+		return newError("index operator not supported: %s", ie.String())
+	}
+}
+
 func (e *Evaluator) evalExpressions(expressions []ast.Expression) []object.Object {
 	var result []object.Object
 	for _, expression := range expressions {

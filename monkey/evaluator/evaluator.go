@@ -54,6 +54,8 @@ func (e *Evaluator) Eval(node ast.Node) object.Object {
 		return &object.String{Value: node.Value}
 	case *ast.ArrayLiteral:
 		return e.evalArrayLiteral(node)
+	case *ast.IndexExpression:
+		return e.evalArrayIndexExpression(node)
 	default:
 		fmt.Printf("Eval: node type not handled: %s\n", reflect.TypeOf(node))
 	}
