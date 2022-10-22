@@ -278,6 +278,7 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`len("hello world")`, 11},
 		{`len(1)`, "argument to `len` not supported, got INTEGER"},
 		{`len("one", "two")`, "wrong number of arguments. got=2, want=1"},
+		{`print("hello world")`, nil},
 	}
 
 	for _, tt := range tests {
@@ -285,6 +286,8 @@ func TestBuiltinFunctions(t *testing.T) {
 		switch expected := tt.expected.(type) {
 		case int:
 			testIntegerObject(t, evaluated, tt.input, int64(expected))
+		case nil:
+			testNullObject(t, evaluated, tt.input)
 		case string:
 			errObj, ok := evaluated.(*object.Error)
 			if !ok {

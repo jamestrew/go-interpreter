@@ -1,13 +1,14 @@
 package evaluator
 
 import (
+	"fmt"
+
 	"github.com/jamestrew/go-interpreter/monkey/object"
 )
 
 var builtins = map[string]*object.Builtin{
-	"len": {
-		Fn: __len,
-	},
+	"len":   {Fn: __len},
+	"print": {Fn: __print},
 }
 
 func __len(args ...object.Object) object.Object {
@@ -21,4 +22,12 @@ func __len(args ...object.Object) object.Object {
 	}
 
 	return &object.Integer{Value: int64(len(arg.Value))}
+}
+
+func __print(args ...object.Object) object.Object {
+	// TODO: string formatting
+	for _, arg := range args {
+		fmt.Println(arg.Inspect())
+	}
+	return NULL
 }
