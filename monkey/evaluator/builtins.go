@@ -11,6 +11,7 @@ var builtins = map[string]*object.Builtin{
 	"print": {Fn: __print},
 	"first": {Fn: __first},
 	"last": {Fn: __last},
+	"arrayPush": {Fn: __arrayPush},
 }
 
 func __len(args ...object.Object) object.Object {
@@ -64,4 +65,17 @@ func __last(args ...object.Object) object.Object {
 	default:
 		return newError("argument to `last` not supported, got %s", args[0].Type())
 	}
+}
+
+func __arrayPush(args ...object.Object) object.Object {
+	if len(args) != 2 {
+		return wrongArgCountError(2, len(args))
+	}
+
+	arrObj, ok := args[0].(*object.Array)
+	if !ok {
+		return newError("argument to `arrayPush` not supported, got=%T", args[0])
+	}
+	arrObj.Elements = append(arrObj.Elements, args[1])
+	return arrObj
 }

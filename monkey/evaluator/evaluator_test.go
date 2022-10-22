@@ -282,10 +282,12 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`print("hello world")`, nil},
 		{`first("hello")`, "h"},
 		{`first("hello", "world")`, "wrong number of arguments. got=2, want=1"},
-		{`let a = [1, 2, 3]; first(a)`, 1},
+		{`first([1, 2, 3])`, 1},
 		{`last("hello")`, "o"},
 		{`last("hello", "world")`, "wrong number of arguments. got=2, want=1"},
-		{`let a = [1, 2, 3]; last(a)`, 3},
+		{`last([1, 2, 3])`, 3},
+		{`arrayPush([1, 2, 3], 4)`, []int{1, 2, 3, 4}},
+		{`arrayPush(4)`, "wrong number of arguments. got=1, want=2"},
 	}
 
 	for _, tt := range tests {
@@ -295,6 +297,11 @@ func TestBuiltinFunctions(t *testing.T) {
 			testIntegerObject(t, evaluated, tt.input, int64(expected))
 		case nil:
 			testNullObject(t, evaluated, tt.input)
+		case []int:
+			arrObj := evaluated.(*object.Array)
+			for idx, elem := range expected {
+				testIntegerObject(t, arrObj.Elements[idx], tt.input, int64(elem))
+			}
 		case string:
 			errObj, ok := evaluated.(*object.Error)
 			if !ok {
