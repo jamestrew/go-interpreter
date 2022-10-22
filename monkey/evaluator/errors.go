@@ -20,3 +20,7 @@ func isError(obj object.Object) bool {
 func infixOperatorError(left, right object.Object, operator string) *object.Error {
 	return newError("unknown infix operation: %s %s %s", left.Type(), operator, right.Type())
 }
+
+func wrongArgCountError(want, got int) *object.Error {
+	return newError("wrong number of arguments. got=%d, want=%d", got, want)
+}

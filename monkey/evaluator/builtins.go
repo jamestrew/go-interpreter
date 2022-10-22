@@ -9,11 +9,12 @@ import (
 var builtins = map[string]*object.Builtin{
 	"len":   {Fn: __len},
 	"print": {Fn: __print},
+	"first": {Fn: __first},
 }
 
 func __len(args ...object.Object) object.Object {
 	if len(args) != 1 {
-		return newError("wrong number of arguments. got=%d, want=1", len(args))
+		return wrongArgCountError(1, len(args))
 	}
 
 	switch argObj := args[0].(type) {
@@ -32,4 +33,19 @@ func __print(args ...object.Object) object.Object {
 		fmt.Println(arg.Inspect())
 	}
 	return NULL
+}
+
+func __first(args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return wrongArgCountError(1, len(args))
+	}
+
+	switch argObj := args[0].(type) {
+	case *object.String:
+		return &object.String{Value: string(argObj.Value[0])}
+	case *object.Array:
+		return argObj.Elements[0]
+	default:
+		return newError("argument to `len` not supported, got %s", args[0].Type())
+	}
 }

@@ -280,6 +280,9 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`len("one", "two")`, "wrong number of arguments. got=2, want=1"},
 		{`let a = [1, 2, 3]; len(a)`, 3},
 		{`print("hello world")`, nil},
+		{`first("hello")`, "h"},
+		{`first("hello", "world")`, "wrong number of arguments. got=2, want=1"},
+		{`let a = [1, 2, 3]; first(a)`, 1},
 	}
 
 	for _, tt := range tests {
@@ -292,7 +295,8 @@ func TestBuiltinFunctions(t *testing.T) {
 		case string:
 			errObj, ok := evaluated.(*object.Error)
 			if !ok {
-				t.Errorf("object is not Error. got=%T", evaluated)
+				// t.Errorf("object is not Error. got=%T", evaluated)
+				testStringObject(t, evaluated, tt.input, expected)
 				continue
 			}
 			if errObj.Message != expected {
