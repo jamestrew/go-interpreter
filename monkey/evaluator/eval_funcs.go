@@ -211,7 +211,7 @@ func evalArrayIndex(array, index object.Object) object.Object {
 
 	if idx.Value >= 0 && idx.Value < int64(maxIdx) {
 		return arr.Elements[idx.Value]
-	} else if idx.Value < 0 {
+	} else if idx.Value < 0 && -idx.Value <= int64(maxIdx) {
 		return arr.Elements[maxIdx + int(idx.Value)]
 	}
 	return NULL
