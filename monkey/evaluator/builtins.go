@@ -10,6 +10,7 @@ var builtins = map[string]*object.Builtin{
 	"len":   {Fn: __len},
 	"print": {Fn: __print},
 	"first": {Fn: __first},
+	"last": {Fn: __last},
 }
 
 func __len(args ...object.Object) object.Object {
@@ -46,6 +47,21 @@ func __first(args ...object.Object) object.Object {
 	case *object.Array:
 		return argObj.Elements[0]
 	default:
-		return newError("argument to `len` not supported, got %s", args[0].Type())
+		return newError("argument to `first` not supported, got %s", args[0].Type())
+	}
+}
+
+func __last(args ...object.Object) object.Object {
+	if len(args) != 1 {
+		return wrongArgCountError(1, len(args))
+	}
+
+	switch argObj := args[0].(type) {
+	case *object.String:
+		return &object.String{Value: string(argObj.Value[len(argObj.Value)-1])}
+	case *object.Array:
+		return argObj.Elements[len(argObj.Elements)-1]
+	default:
+		return newError("argument to `last` not supported, got %s", args[0].Type())
 	}
 }

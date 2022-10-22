@@ -283,6 +283,9 @@ func TestBuiltinFunctions(t *testing.T) {
 		{`first("hello")`, "h"},
 		{`first("hello", "world")`, "wrong number of arguments. got=2, want=1"},
 		{`let a = [1, 2, 3]; first(a)`, 1},
+		{`last("hello")`, "o"},
+		{`last("hello", "world")`, "wrong number of arguments. got=2, want=1"},
+		{`let a = [1, 2, 3]; last(a)`, 3},
 	}
 
 	for _, tt := range tests {
