@@ -486,3 +486,40 @@ func TestParsingIndexExpressions(t *testing.T) {
 		return
 	}
 }
+
+func TestHashLiteral(t *testing.T) {
+	tests := []struct {
+		input string
+		pairs map[string]string
+	}{
+		{`{"foo": "bar" }`, map[string]string{"foo": "bar"}},
+		{`{"foo": "bar", "eggs": "spam" }`, map[string]string{"foo": "bar", "eggs": "spam"}},
+		{`{}`, map[string]string{}},
+	}
+
+	for _, tt := range tests {
+		program, parser := programSetup(t, tt.input, 1)
+		checkParserErrors(t, parser, 0)
+		stmt := checkExpressionStatement(t, program)
+
+		hashObj, ok := stmt.Expression.(*ast.HashLiteral)
+		if !ok {
+			t.Errorf("exp not *ast.HashLiteral. got=%T'", stmt.Expression)
+			continue
+		}
+
+		if len(hashObj.Pairs) != len(tt.pairs) {
+			t.Errorf(
+				"HashObject size incorrect. expected=%d, got=%d. %s",
+				len(tt.pairs),
+				len(hashObj.Pairs),
+				tt.input,
+			)
+			continue
+		}
+
+		for pkey, pvalue := range hashObj.Pairs {
+			checkStringLiteral(t, pvalue, tt.pairs[pkey.String()])
+		}
+	}
+}

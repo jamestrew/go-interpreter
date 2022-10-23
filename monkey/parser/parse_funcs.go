@@ -135,6 +135,49 @@ func (p *Parser) parseArrayLiteral() ast.Expression {
 	return array
 }
 
+func (p *Parser) parseHashPair() (ast.Expression, ast.Expression) {
+	key := p.parseExpression(LOWEST)
+	if !p.expectPeek(token.COLON) {
+		return nil, nil
+	}
+	p.nextToken()
+	value := p.parseExpression(LOWEST)
+	return key, value
+}
+
+func (p *Parser) parseHashPairs() map[ast.Expression]ast.Expression {
+	pairs := map[ast.Expression]ast.Expression{}
+
+	if p.peekTokenIs(token.RBRACE) {
+		p.nextToken()
+		return pairs
+	}
+
+	p.nextToken()
+	key, value := p.parseHashPair()
+	pairs[key] = value
+
+	for p.peekTokenIs(token.COMMA) {
+		p.nextToken()
+		p.nextToken()
+		key, value := p.parseHashPair()
+		pairs[key] = value
+	}
+
+	if !p.expectPeek(token.RBRACE) {
+		return nil
+	}
+	p.nextToken()
+
+	return pairs
+}
+
+func (p *Parser) parseHashLiteral() ast.Expression {
+	hash := &ast.HashLiteral{Token: p.curToken}
+	hash.Pairs = p.parseHashPairs()
+	return hash
+}
+
 func (p *Parser) parseExpressionList(endToken token.TokenType) []ast.Expression {
 	csv := []ast.Expression{}
 
