@@ -212,7 +212,7 @@ func evalArrayIndex(array, index object.Object) object.Object {
 	if idx.Value >= 0 && idx.Value < int64(maxIdx) {
 		return arr.Elements[idx.Value]
 	} else if idx.Value < 0 && -idx.Value <= int64(maxIdx) {
-		return arr.Elements[maxIdx + int(idx.Value)]
+		return arr.Elements[maxIdx+int(idx.Value)]
 	}
 	return NULL
 }
@@ -233,6 +233,30 @@ func (e *Evaluator) evalArrayIndexExpression(ie *ast.IndexExpression) object.Obj
 	default:
 		return newError("index operator not supported: %s", ie.String())
 	}
+}
+
+func (e *Evaluator) evalHashLiteral(hl *ast.HashLiteral) object.Object {
+	pairs := map[object.HashKey]object.HashPair{}
+
+	for keyNode, valueNode := range hl.Pairs {
+		key := e.Eval(keyNode)
+		if isError(key) {
+			return key
+		}
+		hashKey, ok := key.(object.Hashable)
+		if !ok {
+			return newError("unable to hash key: %s", key.Type())
+		}
+
+		value := e.Eval(valueNode)
+		if isError(value) {
+			return value
+		}
+		pair := object.HashPair{Key: key, Value: value}
+		pairs[hashKey.HashKey()] = pair
+	}
+
+	return &object.Hash{Pairs: pairs}
 }
 
 func (e *Evaluator) evalExpressions(expressions []ast.Expression) []object.Object {
