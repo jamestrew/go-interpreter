@@ -217,7 +217,22 @@ func evalArrayIndex(array, index object.Object) object.Object {
 	return NULL
 }
 
-func (e *Evaluator) evalArrayIndexExpression(ie *ast.IndexExpression) object.Object {
+func evalHashIndex(hashObj, keyObj object.Object) object.Object {
+	hash := hashObj.(*object.Hash)
+	key, ok := keyObj.(object.Hashable)
+	if !ok {
+		return hashKeyError(keyObj)
+	}
+
+	ret, ok := hash.Pairs[key.HashKey()]
+	if !ok {
+		return NULL
+	}
+
+	return ret.Value
+}
+
+func (e *Evaluator) evalIndexExpression(ie *ast.IndexExpression) object.Object {
 	left := e.Eval(ie.Left)
 	if isError(left) {
 		return left
@@ -230,6 +245,8 @@ func (e *Evaluator) evalArrayIndexExpression(ie *ast.IndexExpression) object.Obj
 	switch {
 	case left.Type() == object.ARRAY_OBJ && index.Type() == object.INTEGER_OBJ:
 		return evalArrayIndex(left, index)
+	case left.Type() == object.HASH_OBJ:
+		return evalHashIndex(left, index)
 	default:
 		return newError("index operator not supported: %s", ie.String())
 	}

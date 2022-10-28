@@ -2,7 +2,6 @@ package evaluator
 
 import (
 	"fmt"
-	"reflect"
 
 	"github.com/jamestrew/go-interpreter/monkey/ast"
 	"github.com/jamestrew/go-interpreter/monkey/object"
@@ -55,11 +54,11 @@ func (e *Evaluator) Eval(node ast.Node) object.Object {
 	case *ast.ArrayLiteral:
 		return e.evalArrayLiteral(node)
 	case *ast.IndexExpression:
-		return e.evalArrayIndexExpression(node)
+		return e.evalIndexExpression(node)
 	case *ast.HashLiteral:
 		return e.evalHashLiteral(node)
 	default:
-		fmt.Printf("Eval: node type not handled: %s\n", reflect.TypeOf(node))
+		fmt.Printf("Eval: node type not handled: %T\n", node)
 	}
 	return nil
 }
@@ -83,4 +82,3 @@ func isObjTruthy(obj object.Object) bool {
 		return true
 	}
 }
-
