@@ -167,7 +167,6 @@ func (p *Parser) parseHashPairs() map[ast.Expression]ast.Expression {
 	if !p.expectPeek(token.RBRACE) {
 		return nil
 	}
-	p.nextToken()
 
 	return pairs
 }

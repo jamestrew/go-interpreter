@@ -566,3 +566,28 @@ func TestHashLiteralsWithExpression(t *testing.T) {
 		testFunc(value)
 	}
 }
+
+func TestHashIndexing(t *testing.T) {
+	input := `{"foo": 5}["foo"]`
+
+	program, parser := programSetup(t, input, 1)
+	checkParserErrors(t, parser, 0)
+
+	stmt := checkExpressionStatement(t, program)
+	indexExp, ok := stmt.Expression.(*ast.IndexExpression)
+	if !ok {
+		t.Fatalf("exp not *ast.IndexExpression. got=%T'", stmt.Expression)
+	}
+
+	hash, ok := indexExp.Left.(*ast.HashLiteral)
+	if !ok {
+		t.Fatalf("left of IndexExpression not HashLiteral. got=%T", indexExp.Left)
+	}
+
+	for key, value := range hash.Pairs {
+		checkStringLiteral(t, key, "foo")
+		checkIntegerLiteral(t, value, 5)
+	}
+
+	checkStringLiteral(t, indexExp.Index, "foo")
+}
