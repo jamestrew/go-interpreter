@@ -162,6 +162,7 @@ if (10 > 1) {
 		},
 		{"foobar", "identifier not found: foobar"},
 		{`"hello" - "world"`, "unknown infix operation: STRING - STRING"},
+		{`{"name": "Monkey"}[fn(x) { x }];`, "unable to hash key: FUNCTION"},
 	}
 
 	for _, tt := range tests {

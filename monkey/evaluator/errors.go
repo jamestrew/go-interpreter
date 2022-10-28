@@ -24,3 +24,7 @@ func infixOperatorError(left, right object.Object, operator string) *object.Erro
 func wrongArgCountError(want, got int) *object.Error {
 	return newError("wrong number of arguments. got=%d, want=%d", got, want)
 }
+
+func hashKeyError(key object.Object) *object.Error {
+	return newError("unable to hash key: %s", key.Type())
+}

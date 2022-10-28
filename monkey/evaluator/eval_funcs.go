@@ -245,7 +245,7 @@ func (e *Evaluator) evalHashLiteral(hl *ast.HashLiteral) object.Object {
 		}
 		hashKey, ok := key.(object.Hashable)
 		if !ok {
-			return newError("unable to hash key: %s", key.Type())
+			return hashKeyError(key)
 		}
 
 		value := e.Eval(valueNode)
