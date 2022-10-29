@@ -32,8 +32,9 @@ func __len(args ...object.Object) object.Object {
 func __print(args ...object.Object) object.Object {
 	// TODO: string formatting
 	for _, arg := range args {
-		fmt.Println(arg.Inspect())
+		fmt.Print(arg.Inspect())
 	}
+	fmt.Println()
 	return NULL
 }
 
