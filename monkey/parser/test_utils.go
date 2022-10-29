@@ -5,13 +5,10 @@ import (
 	"testing"
 
 	"github.com/jamestrew/go-interpreter/monkey/ast"
-	"github.com/jamestrew/go-interpreter/monkey/lexer"
 )
 
 func programSetup(t *testing.T, input string, stmtCnt int) (*ast.Program, *Parser) {
-	lexer := lexer.New(input)
-	parser := New(lexer)
-	program := parser.ParseProgram()
+	program, parser := ParseInput(input)
 	if program == nil {
 		t.Fatalf("ParseProgram() returned nil")
 	}

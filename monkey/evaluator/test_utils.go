@@ -8,7 +8,7 @@ import (
 )
 
 func testEval(input string) object.Object {
-	program := parser.ParseInput(input)
+	program, _ := parser.ParseInput(input)
 	env := object.NewEnvironment()
 	eval := New(env)
 	return eval.Eval(program)

@@ -6,7 +6,6 @@ import (
 	"io"
 
 	"github.com/jamestrew/go-interpreter/monkey/evaluator"
-	"github.com/jamestrew/go-interpreter/monkey/lexer"
 	"github.com/jamestrew/go-interpreter/monkey/object"
 	"github.com/jamestrew/go-interpreter/monkey/parser"
 )
@@ -33,9 +32,7 @@ func Start(in io.Reader, out io.Writer) {
 		}
 
 		line := scanner.Text()
-		p := parser.New(lexer.New(line))
-
-		program := p.ParseProgram()
+		program, p := parser.ParseInput(line)
 		if len(p.Errors()) != 0 {
 			printParseErrors(out, p.Errors())
 			continue

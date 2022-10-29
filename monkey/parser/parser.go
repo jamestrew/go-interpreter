@@ -138,6 +138,7 @@ func (p *Parser) ParseProgram() *ast.Program {
 	return &ast.Program{Statements: statements}
 }
 
-func ParseInput(input string) *ast.Program {
-	return New(lexer.New(input)).ParseProgram()
+func ParseInput(input string) (*ast.Program, *Parser) {
+	parser := New(lexer.New(input))
+	return parser.ParseProgram(), parser
 }
